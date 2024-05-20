@@ -1,5 +1,5 @@
 name: webp
-description: A sample command-line application with basic argument parsing.
+description: Asset transformer for converting images into WebP files.
 version: 0.0.1
 repository: https://github.com/leancodepl/flutter_webp
 
