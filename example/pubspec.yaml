@@ -24,4 +24,4 @@ flutter:
     - path: assets/images/example_image.png
       transformers:
         - package: webp
-          args: ['--quality=85', '--hint=graph', '--af']
+          args: ['--quality=13', '--hint=graph', '--af']
