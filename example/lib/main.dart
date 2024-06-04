@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -33,7 +31,7 @@ class _MyHomePage extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[Image.asset('assets/images/example_image.png')],
+          children: [Image.asset('assets/images/example_image.png')],
         ),
       ),
     );

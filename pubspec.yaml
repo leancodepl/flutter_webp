@@ -1,16 +1,17 @@
-name: flutter_webp
+name: webp
 description: Asset transformer for converting images into WebP files.
 version: 0.0.1
 repository: https://github.com/leancodepl/flutter_webp
 
 executables:
-  flutter_webp:
+  webp:
     
 environment:
   sdk: ^3.4.0
 
 dependencies:
   args: ^2.4.2
+  leancode_lint: ^12.0.0
 
 dev_dependencies:
   lints: ^3.0.0

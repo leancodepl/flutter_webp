@@ -1,10 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:args/args.dart';
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
 
-const String version = '0.0.1';
+const version = '0.0.1';
 
 ArgParser buildParser() {
   return ArgParser()
@@ -14,7 +15,7 @@ ArgParser buildParser() {
       'help',
       abbr: 'h',
       negatable: false,
-      help: 'Print this usage information.',
+      help: 'log this usage information.',
     )
     ..addFlag(
       'verbose',
@@ -25,7 +26,7 @@ ArgParser buildParser() {
     ..addFlag(
       'version',
       negatable: false,
-      help: 'Print the tool version.',
+      help: 'log the tool version.',
     )
     ..addOption(
       'input',
@@ -99,7 +100,7 @@ ArgParser buildParser() {
     ..addFlag(
       'low_memory',
       help:
-          'Reduce memory usage of lossy encoding by saving four times the compressed size (typically). This will make the encoding slower and the output slightly different in size and distortion. This flag is only effective for methods 3 and up, and is off by default. Note that leaving this flag off will have some side effects on the bitstream: it forces certain bitstream features like number of partitions (forced to 1). Note that a more detailed report of bitstream size is printed by cwebp when using this option.',
+          'Reduce memory usage of lossy encoding by saving four times the compressed size (typically). This will make the encoding slower and the output slightly different in size and distortion. This flag is only effective for methods 3 and up, and is off by default. Note that leaving this flag off will have some side effects on the bitstream: it forces certain bitstream features like number of partitions (forced to 1). Note that a more detailed report of bitstream size is loged by cwebp when using this option.',
     )
 
     /// Lossy Options
@@ -117,7 +118,7 @@ ArgParser buildParser() {
     ..addOption(
       'pass',
       help:
-          'Set a maximum number of passes to use during the dichotomy used by options -size or -psnr. Maximum value is 10, default is 1. If options -size or -psnr were used, but -pass wasn\'t specified, a default value of \'6\' passes will be used. If -pass is specified, but neither -size nor -psnr are, a target PSNR of 40dB will be used.',
+          "Set a maximum number of passes to use during the dichotomy used by options -size or -psnr. Maximum value is 10, default is 1. If options -size or -psnr were used, but -pass wasn't specified, a default value of '6' passes will be used. If -pass is specified, but neither -size nor -psnr are, a target PSNR of 40dB will be used.",
     )
     ..addFlag(
       'af',
@@ -155,7 +156,7 @@ ArgParser buildParser() {
     ..addFlag(
       'sharp_yuv',
       help:
-          'Use more accurate and sharper RGB->YUV conversion if needed. Note that this process is slower than the default \'fast\' RGB->YUV conversion.',
+          "Use more accurate and sharper RGB->YUV conversion if needed. Note that this process is slower than the default 'fast' RGB->YUV conversion.",
     )
     ..addOption(
       'sns',
@@ -170,7 +171,7 @@ ArgParser buildParser() {
     ..addOption(
       'partition_limit',
       help:
-          'Degrade quality by limiting the number of bits used by some macroblocks. Range is 0 (no degradation, the default) to 100 (full degradation). Useful values are usually around 30-70 for moderately large images. In the VP8 format, the so-called control partition has a limit of 512k and is used to store the following information: whether the macroblock is skipped, which segment it belongs to, whether it is coded as intra 4x4 or intra 16x16 mode, and finally the prediction modes to use for each of the sub-blocks. For a very large image, 512k only leaves room for a few bits per 16x16 macroblock. The absolute minimum is 4 bits per macroblock. Skip, segment, and mode information can use up almost all these 4 bits (although the case is unlikely), which is problematic for very large images. The partition_limit factor controls how frequently the most bit-costly mode (intra 4x4) will be used. This is useful in case the 512k limit is reached and the following message is displayed: Error code: 6 (PARTITION0_OVERFLOW: Partition #0 is too big to fit 512k). If using -partition_limit is not enough to meet the 512k constraint, one should use less segments in order to save more header bits per macroblock. See the -segments option. Note the -m and -q options also influence the encoder\'s decisions and ability to hit this limit.',
+          "Degrade quality by limiting the number of bits used by some macroblocks. Range is 0 (no degradation, the default) to 100 (full degradation). Useful values are usually around 30-70 for moderately large images. In the VP8 format, the so-called control partition has a limit of 512k and is used to store the following information: whether the macroblock is skipped, which segment it belongs to, whether it is coded as intra 4x4 or intra 16x16 mode, and finally the prediction modes to use for each of the sub-blocks. For a very large image, 512k only leaves room for a few bits per 16x16 macroblock. The absolute minimum is 4 bits per macroblock. Skip, segment, and mode information can use up almost all these 4 bits (although the case is unlikely), which is problematic for very large images. The partition_limit factor controls how frequently the most bit-costly mode (intra 4x4) will be used. This is useful in case the 512k limit is reached and the following message is displayed: Error code: 6 (PARTITION0_OVERFLOW: Partition #0 is too big to fit 512k). If using -partition_limit is not enough to meet the 512k constraint, one should use less segments in order to save more header bits per macroblock. See the -segments option. Note the -m and -q options also influence the encoder's decisions and ability to hit this limit.",
     )
 
     /// Additional Options
@@ -178,7 +179,7 @@ ArgParser buildParser() {
       's',
       abbr: 's',
       help:
-          'Specify that the input file actually consists of raw Y\'CbCr samples following the ITU-R BT.601 recommendation, in 4:2:0 linear format. The luma plane has size width x height.',
+          "Specify that the input file actually consists of raw Y'CbCr samples following the ITU-R BT.601 recommendation, in 4:2:0 linear format. The luma plane has size width x height.",
     )
     ..addOption(
       'pre',
@@ -225,11 +226,11 @@ ArgParser buildParser() {
     );
 }
 
-void printUsage(ArgParser argParser) {
-  print(
+void logUsage(ArgParser argParser) {
+  log(
     'Usage: dart webp.dart <flags> [arguments]',
   );
-  print(argParser.usage);
+  log(argParser.usage);
 }
 
 Future<void> convertToWebP(
@@ -237,25 +238,25 @@ Future<void> convertToWebP(
   String output,
   List<String> options,
 ) async {
-  var result = await Process.run('cwebp', [...options, input, '-o', output]);
-  print(result.stdout);
+  final result = await Process.run('cwebp', [...options, input, '-o', output]);
+  log(result.stdout.toString());
 }
 
 Future<void> main(List<String> arguments) async {
-  final ArgParser argParser = buildParser();
+  final argParser = buildParser();
   final options = <String>[];
   try {
-    final ArgResults results = argParser.parse(arguments);
-    bool verbose = false;
+    final results = argParser.parse(arguments);
+    var verbose = false;
 
     // Process the parsed arguments.
     // Basic Options
     if (results.wasParsed('help')) {
-      printUsage(argParser);
+      logUsage(argParser);
       return;
     }
     if (results.wasParsed('version')) {
-      print('flutter_webp version: $version');
+      log('webp version: $version');
       return;
     }
     if (results.wasParsed('verbose')) {
@@ -265,36 +266,44 @@ Future<void> main(List<String> arguments) async {
       options.add('-lossless');
     }
     if (results.wasParsed('near_lossless')) {
-      options.add('-near_lossless');
-      options.add(results['near_lossless']);
+      options
+        ..add('-near_lossless')
+        ..add(results['near_lossless'] as String);
     }
     if (results.wasParsed('quality')) {
-      options.add('-q');
-      options.add(results['quality']);
+      options
+        ..add('-q')
+        ..add(results['quality'] as String);
     }
     if (results.wasParsed('lossless_compression')) {
-      options.add('-z');
-      options.add(results['lossless_compression']);
+      options
+        ..add('-z')
+        ..add(results['lossless_compression'] as String);
     }
     if (results.wasParsed('alpha_q')) {
-      options.add('-alpha_q');
-      options.add(results['alpha_q']);
+      options
+        ..add('-alpha_q')
+        ..add(results['alpha_q'] as String);
     }
     if (results.wasParsed('preset')) {
-      options.add('-preset');
-      options.add(results['preset']);
+      options
+        ..add('-preset')
+        ..add(results['preset'] as String);
     }
     if (results.wasParsed('m')) {
-      options.add('-m');
-      options.add(results['m']);
+      options
+        ..add('-m')
+        ..add(results['m'] as String);
     }
     if (results.wasParsed('crop')) {
-      options.add('-crop');
-      options.add(results['crop']);
+      options
+        ..add('-crop')
+        ..add(results['crop'] as String);
     }
     if (results.wasParsed('resize')) {
-      options.add('-resize');
-      options.add(results['resize']);
+      options
+        ..add('-resize')
+        ..add(results['resize'] as String);
     }
     if (results.wasParsed('mt')) {
       options.add('-mt');
@@ -304,16 +313,19 @@ Future<void> main(List<String> arguments) async {
     }
     // Lossy Options
     if (results.wasParsed('size')) {
-      options.add('-size');
-      options.add(results['size']);
+      options
+        ..add('-size')
+        ..add(results['size'] as String);
     }
     if (results.wasParsed('psnr')) {
-      options.add('-psnr');
-      options.add(results['psnr']);
+      options
+        ..add('-psnr')
+        ..add(results['psnr'] as String);
     }
     if (results.wasParsed('pass')) {
-      options.add('-pass');
-      options.add(results['pass']);
+      options
+        ..add('-pass')
+        ..add(results['pass'] as String);
     }
     if (results.wasParsed('af')) {
       options.add('-af');
@@ -323,12 +335,14 @@ Future<void> main(List<String> arguments) async {
     }
     // Lossy advanced options
     if (results.wasParsed('f')) {
-      options.add('-f');
-      options.add(results['f']);
+      options
+        ..add('-f')
+        ..add(results['f'] as String);
     }
     if (results.wasParsed('sharpness')) {
-      options.add('-sharpness');
-      options.add(results['sharpness']);
+      options
+        ..add('-sharpness')
+        ..add(results['sharpness'] as String);
     }
     if (results.wasParsed('strong')) {
       options.add('-strong');
@@ -340,72 +354,86 @@ Future<void> main(List<String> arguments) async {
       options.add('-sharp_yuv');
     }
     if (results.wasParsed('sns')) {
-      options.add('-sns');
-      options.add(results['sns']);
+      options
+        ..add('-sns')
+        ..add(results['sns'] as String);
     }
     if (results.wasParsed('segments')) {
-      options.add('-segments');
-      options.add(results['segments']);
+      options
+        ..add('-segments')
+        ..add(results['segments'] as String);
     }
     if (results.wasParsed('partition_limit')) {
-      options.add('-partition_limit');
-      options.add(results['partition_limit']);
+      options
+        ..add('-partition_limit')
+        ..add(results['partition_limit'] as String);
     }
     // Additional Options
     if (results.wasParsed('s')) {
-      options.add('-s');
-      options.add(results['s']);
+      options
+        ..add('-s')
+        ..add(results['s'] as String);
     }
     if (results.wasParsed('pre')) {
-      options.add('-pre');
-      options.add(results['pre']);
+      options
+        ..add('-pre')
+        ..add(results['pre'] as String);
     }
     if (results.wasParsed('alpha_filter')) {
-      options.add('-alpha_filter');
-      options.add(results['alpha_filter']);
+      options
+        ..add('-alpha_filter')
+        ..add(results['alpha_filter'] as String);
     }
     if (results.wasParsed('alpha_method')) {
-      options.add('-alpha_method');
-      options.add(results['alpha_method']);
+      options
+        ..add('-alpha_method')
+        ..add(results['alpha_method'] as String);
     }
     if (results.wasParsed('exact')) {
       options.add('-exact');
     }
     if (results.wasParsed('blend_alpha')) {
-      options.add('-blend_alpha');
-      options.add(results['blend_alpha']);
+      options
+        ..add('-blend_alpha')
+        ..add(results['blend_alpha'] as String);
     }
     if (results.wasParsed('noalpha')) {
       options.add('-noalpha');
     }
     if (results.wasParsed('hint')) {
-      options.add('-hint');
-      options.add(results['hint']);
+      options
+        ..add('-hint')
+        ..add(results['hint'] as String);
     }
     if (results.wasParsed('metadata')) {
-      options.add('-metadata');
-      options.add(results['metadata']);
+      options
+        ..add('-metadata')
+        ..add(results['metadata'] as String);
     }
     if (results.wasParsed('noasm')) {
       options.add('-noasm');
     }
 
     if (verbose) {
-      print('[VERBOSE] All arguments: ${results.arguments}');
+      log('[VERBOSE] All arguments: ${results.arguments}');
     } else {
-      print('Positional arguments: ${results.rest}');
+      log('Positional arguments: ${results.rest}');
     }
 
     // Process the parsed arguments.
     if (results.wasParsed('input') && results.wasParsed('output')) {
-      await convertToWebP(results['input'], results['output'], options);
+      await convertToWebP(
+        results['input'] as String,
+        results['output'] as String,
+        options,
+      );
     } else {
-      print('wrong input');
+      log('wrong input');
     }
   } on FormatException catch (e) {
-    // Print usage information if an invalid argument was provided.
-    print(e.message);
-    print('');
-    printUsage(argParser);
+    // log usage information if an invalid argument was provided.
+    log(e.message);
+    log('');
+    logUsage(argParser);
   }
 }

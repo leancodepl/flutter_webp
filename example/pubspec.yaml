@@ -14,14 +14,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_webp:
-    path: ../
   leancode_lint: ^12.0.0
+  webp:
+    path: ../
 
 flutter:
 
   assets:
     - path: assets/images/example_image.png
       transformers:
-        - package: flutter_webp
+        - package: webp
           args: ['--quality=85', '--hint=graph', '--af']

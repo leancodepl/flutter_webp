@@ -1,4 +1,4 @@
-# flutter_webp
+# webp
 
 Asset transformer for converting images into WebP files.
 
@@ -11,16 +11,28 @@ Follow the instructions at [https://developers.google.com/speed/webp/docs/precom
 
 If you are using macOS and have Homebrew installed, you can install cwebp using the following command: `brew install webp`
 
-### Package usage
+## Package usage
 
 Add to your pubspec.yaml
+
+#### Default usage
 
 ```yaml
 flutter:
   assets:
     - path: assets/logo.jpg
       transformers:
-        - package: flutter_webp
+        - package: webp
+```
+
+#### Usage with params
+
+```yaml
+flutter:
+  assets:
+    - path: assets/logo.jpg
+      transformers:
+        - package: webp
           args: ['--quality=65', '--hint=graph', '--af']
 ```
 
@@ -29,6 +41,7 @@ flutter:
 Here are some commonly used parameters for cwebp:
 
 - `-q`, `--quality`: Set the quality factor for the output image. The value should be between 0 and 100, with 100 being the highest quality. For example, `--quality=80`.
+- `loseless`: Encode the image without any loss. For images with fully transparent area, the invisible pixel values (R/G/B or Y/U/V) will be preserved only if the `--exact` option is used..
 - `-m`, `--method`: Set the compression method. The value can be `0` (fastest), `1` (default), `2` (slowest), or `3` (best quality). For example, `--method=2`.
 - `-f`, `--filter`: Set the filter strength. The value can be between 0 and 100, with 0 being no filtering and 100 being maximum filtering. For example, `--filter=50`.
 - `-s`, `--size`: Set the target size for the output image. The value should be in bytes. For example, `--size=500000`.
