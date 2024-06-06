@@ -1,0 +1,26 @@
+name: example
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  leancode_lint: ^12.0.0
+  webp:
+    path: ../
+
+flutter:
+  assets:
+    - path: assets/images/example_image.png
+      transformers:
+        - package: webp
+          args: ['--quality=13', '--hint=graph', '--af']
