@@ -17,6 +17,8 @@ Add to your pubspec.yaml
 
 #### Default usage
 
+If run without additional arguments, the default value of the quality parameter = 75 will be used.
+
 ```yaml
 flutter:
   assets:
