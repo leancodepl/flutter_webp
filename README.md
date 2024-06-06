@@ -11,6 +11,12 @@ Follow the instructions at [https://developers.google.com/speed/webp/docs/precom
 
 If you are using macOS and have Homebrew installed, you can install cwebp using the following command: `brew install webp`
 
+## Install package
+
+```
+flutter pub add webp --dev
+```
+
 ## Package usage
 
 Add to your pubspec.yaml
