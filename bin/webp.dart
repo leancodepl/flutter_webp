@@ -1,11 +1,12 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:args/args.dart';
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
 
-const version = '0.0.1';
+const version = '0.1.0';
 
 ArgParser buildParser() {
   return ArgParser()
@@ -39,6 +40,10 @@ ArgParser buildParser() {
       mandatory: true,
       abbr: 'o',
       help: 'Output WebP file.',
+    )
+    ..addOption(
+      'from_path',
+      help: r'Use a cwebp converter from the $PATH.',
     )
     ..addFlag(
       'lossless',
@@ -233,12 +238,51 @@ void logUsage(ArgParser argParser) {
   log(argParser.usage);
 }
 
+String? getPath({required bool fromPath}) {
+  if (fromPath) {
+    return Platform.environment['PATH'];
+  }
+
+  final architecture = switch (Abi.current()) {
+    Abi.windowsX64 => 'windows-x64',
+    Abi.macosX64 => 'mac-x86-64',
+    Abi.macosArm64 => 'mac-arm64',
+    Abi.linuxX64 => 'linux-x86-64',
+    Abi.linuxArm64 => 'linux-aarch64',
+    _ => null,
+  };
+
+  if (architecture == null) {
+    return null;
+  }
+
+  final separator = Platform.pathSeparator;
+
+  final dir = switch (Platform.environment['PUB_CACHE']) {
+    final pubCache? => pubCache,
+    _ when Platform.isWindows =>
+      '${Platform.environment['LOCALAPPDATA']}\\Pub\\Cache',
+    _ => '${Platform.environment['HOME']}/.pub-cache',
+  };
+
+  final subdir = 'hosted${separator}pub.dev${separator}webp-$version';
+
+  return '$dir$separator$subdir$separator$architecture${separator}cwebp';
+}
+
 Future<void> convertToWebP(
   String input,
   String output,
-  List<String> options,
-) async {
-  final result = await Process.run('cwebp', [...options, input, '-o', output]);
+  List<String> options, {
+  required bool fromPath,
+}) async {
+  final path = getPath(fromPath: fromPath);
+  if (path == null) {
+    return;
+  }
+
+  final result = await Process.run(path, [...options, input, '-o', output]);
+
   log(result.stdout.toString());
 }
 
@@ -248,6 +292,7 @@ Future<void> main(List<String> arguments) async {
   try {
     final results = argParser.parse(arguments);
     var verbose = false;
+    var fromPath = false;
 
     // Process the parsed arguments.
     // Basic Options
@@ -261,6 +306,9 @@ Future<void> main(List<String> arguments) async {
     }
     if (results.wasParsed('verbose')) {
       verbose = true;
+    }
+    if (results.wasParsed('from_path')) {
+      fromPath = true;
     }
     if (results.wasParsed('lossless')) {
       options.add('-lossless');
@@ -426,6 +474,7 @@ Future<void> main(List<String> arguments) async {
         results['input'] as String,
         results['output'] as String,
         options,
+        fromPath: fromPath,
       );
     } else {
       log('wrong input');
