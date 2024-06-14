@@ -43,10 +43,10 @@ jobs:
           cd ..
 
           mv tmp/libwebp-1.4.0-windows-x64/libwebp-1.4.0-windows-x64/bin/cwebp.exe windows-x64/
-          mv tmp/libwebp-1.4.0-rc1-mac-x86-64/libwebp-1.4.0-rc1-mac-x86-64/bin/cwebp.exe mac-x86-64/
-          mv tmp/libwebp-1.4.0-rc1-mac-arm64/libwebp-1.4.0-rc1-mac-arm64/bin/cwebp.exe mac-arm64/
-          mv tmp/libwebp-1.4.0-linux-x86-64/libwebp-1.4.0-linux-x86-64/bin/cwebp.exe linux-x86-64/
-          mv tmp/libwebp-1.4.0-linux-aarch64/libwebp-1.4.0-linux-aarch64/bin/cwebp.exe linux-aarch64/
+          mv tmp/libwebp-1.4.0-rc1-mac-x86-64/libwebp-1.4.0-rc1-mac-x86-64/bin/cwebp mac-x86-64/
+          mv tmp/libwebp-1.4.0-rc1-mac-arm64/libwebp-1.4.0-rc1-mac-arm64/bin/cwebp mac-arm64/
+          mv tmp/libwebp-1.4.0-linux-x86-64/libwebp-1.4.0-linux-x86-64/bin/cwebp linux-x86-64/
+          mv tmp/libwebp-1.4.0-linux-aarch64/libwebp-1.4.0-linux-aarch64/bin/cwebp linux-aarch64/
 
           rm -r tmp
 
