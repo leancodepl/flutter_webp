@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
@@ -240,35 +241,37 @@ void logUsage(ArgParser argParser) {
   log(argParser.usage);
 }
 
-String? getPath() {
-  final architecture = switch (Abi.current()) {
-    Abi.windowsX64 => 'windows-x64',
-    Abi.macosX64 => 'mac-x86-64',
-    Abi.macosArm64 => 'mac-arm64',
-    Abi.linuxX64 => 'linux-x86-64',
-    Abi.linuxArm64 => 'linux-aarch64',
-    _ => null,
-  };
+Future<String> getPath() async {
+  final architectures = [
+    Abi.windowsX64,
+    Abi.macosX64,
+    Abi.macosArm64,
+    Abi.linuxX64,
+    Abi.linuxArm64,
+  ];
 
-  if (architecture == null) {
-    return null;
+  if (!architectures.contains(Abi.current())) {
+    final m1 = 'Architecture ${Abi.current()} not spported.';
+    const m2 = 'Supported architectures are:';
+    stderr.write('$m1 $m2 $architectures');
+    exit(1);
   }
 
-  final pubCache = switch (Platform.environment['PUB_CACHE']) {
-    final dir? => dir,
-    _ when Platform.isWindows =>
-      p.join('${Platform.environment['LOCALAPPDATA']}', 'Pub', 'Cache'),
-    _ => p.join('${Platform.environment['HOME']}', '.pub-cache'),
-  };
+  final config = await findPackageConfig(Directory.current);
 
-  return p.join(
-    pubCache,
-    'hosted',
-    'pub.dev',
-    'webp-$version',
-    architecture,
-    'cwebp',
-  );
+  if (config == null) {
+    stderr.write('Failed to locate or read package config.');
+    exit(1);
+  }
+
+  final package = config.packages.where((e) => e.name == 'webp').firstOrNull;
+
+  if (package == null) {
+    stderr.write('Failed to find webp in package config.');
+    exit(1);
+  }
+
+  return package.packageUriRoot.path;
 }
 
 Future<void> convertToWebP(
@@ -282,15 +285,7 @@ Future<void> convertToWebP(
   if (fromPath) {
     path = 'cwebp';
   } else {
-    path = getPath();
-    if (path == null) {
-      final m1 = 'Architecture ${Abi.current()} not spported.';
-      const m2 = 'Supported architectures are:';
-      final m3 =
-          '${Abi.windowsX64}, ${Abi.macosX64}, ${Abi.macosArm64}, ${Abi.linuxX64}, ${Abi.linuxArm64}.';
-      stderr.write('$m1 $m2 $m3');
-      exit(1);
-    }
+    path = p.join(await getPath(), 'cwebp');
   }
 
   try {
