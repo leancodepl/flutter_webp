@@ -42,8 +42,9 @@ ArgParser buildParser() {
       abbr: 'o',
       help: 'Output WebP file.',
     )
-    ..addOption(
+    ..addFlag(
       'from_path',
+      negatable: false,
       help: r'Use a cwebp converter from the $PATH.',
     )
     ..addFlag(
