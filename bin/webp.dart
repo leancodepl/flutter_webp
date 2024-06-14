@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:path/path.dart' as p;
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
 
@@ -238,11 +239,7 @@ void logUsage(ArgParser argParser) {
   log(argParser.usage);
 }
 
-String? getPath({required bool fromPath}) {
-  if (fromPath) {
-    return Platform.environment['PATH'];
-  }
-
+String? getPath() {
   final architecture = switch (Abi.current()) {
     Abi.windowsX64 => 'windows-x64',
     Abi.macosX64 => 'mac-x86-64',
@@ -256,18 +253,21 @@ String? getPath({required bool fromPath}) {
     return null;
   }
 
-  final separator = Platform.pathSeparator;
-
-  final dir = switch (Platform.environment['PUB_CACHE']) {
-    final pubCache? => pubCache,
+  final pubCache = switch (Platform.environment['PUB_CACHE']) {
+    final dir? => dir,
     _ when Platform.isWindows =>
-      '${Platform.environment['LOCALAPPDATA']}\\Pub\\Cache',
-    _ => '${Platform.environment['HOME']}/.pub-cache',
+      p.join('${Platform.environment['LOCALAPPDATA']}', 'Pub', 'Cache'),
+    _ => p.join('${Platform.environment['HOME']}', '.pub-cache'),
   };
 
-  final subdir = 'hosted${separator}pub.dev${separator}webp-$version';
-
-  return '$dir$separator$subdir$separator$architecture${separator}cwebp';
+  return p.join(
+    pubCache,
+    'hosted',
+    'pub.dev',
+    'webp-$version',
+    architecture,
+    'cwebp',
+  );
 }
 
 Future<void> convertToWebP(
@@ -276,14 +276,33 @@ Future<void> convertToWebP(
   List<String> options, {
   required bool fromPath,
 }) async {
-  final path = getPath(fromPath: fromPath);
-  if (path == null) {
-    return;
+  String? path;
+
+  if (fromPath) {
+    path = 'cwebp';
+  } else {
+    path = getPath();
+    if (path == null) {
+      final m1 = 'Architecture ${Abi.current()} not spported.';
+      const m2 = 'Supported architectures are:';
+      final m3 =
+          '${Abi.windowsX64}, ${Abi.macosX64}, ${Abi.macosArm64}, ${Abi.linuxX64}, ${Abi.linuxArm64}.';
+      stderr.write('$m1 $m2 $m3');
+      exit(1);
+    }
   }
 
-  final result = await Process.run(path, [...options, input, '-o', output]);
-
-  log(result.stdout.toString());
+  try {
+    final result = await Process.run(path, [...options, input, '-o', output]);
+    log(result.stdout.toString());
+  } catch (e) {
+    if (fromPath) {
+      stderr.write(r'cwebp not found in $PATH.');
+    } else {
+      stderr.write('cwebp not found in $path.');
+    }
+    exit(1);
+  }
 }
 
 Future<void> main(List<String> arguments) async {
