@@ -38,7 +38,7 @@ flutter:
           args: ['--quality=65', '--hint=graph', '--af']
 ```
 
-By default, the package runs the embedded precompiled cwebp binary. You can use the one specified in your `$PATH` by adding the `--from_path` flag. On how to install cwebp see [Optional cwebp installation](#optional_cwebp_installation).
+By default, the package runs the embedded precompiled cwebp binary. You can use the one specified in your `$PATH` by adding the `--from_path` flag.
 
 ```yaml
 flutter:
@@ -48,16 +48,6 @@ flutter:
         - package: webp
           args: ['--from_path']
 ```
-
-## <a id="optional_cwebp_installation"></a> Optional cwebp installation
-
-### Option 1: Download precompiled binaries from Google
-
-Follow the instructions at [https://developers.google.com/speed/webp/docs/precompiled](https://developers.google.com/speed/webp/docs/precompiled) to download and install the precompiled binaries for cwebp.
-
-### Option 2: Install using Homebrew (macOS)
-
-If you are using macOS and have Homebrew installed, you can install cwebp using the following command: `brew install webp`
 
 ## cwebp parameters
 
