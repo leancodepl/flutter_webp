@@ -10,6 +10,14 @@ import 'package:path/path.dart' as p;
 
 const version = '0.1.0';
 
+const architectures = {
+  Abi.windowsX64: 'windows-x64',
+  Abi.macosX64: 'mac-x86-64',
+  Abi.macosArm64: 'mac-arm64',
+  Abi.linuxX64: 'linux-x86-64',
+  Abi.linuxArm64: 'linux-aarch64',
+};
+
 ArgParser buildParser() {
   return ArgParser()
 
@@ -42,6 +50,12 @@ ArgParser buildParser() {
       mandatory: true,
       abbr: 'o',
       help: 'Output WebP file.',
+    )
+    ..addFlag(
+      'architectures',
+      abbr: 'arch',
+      negatable: false,
+      help: 'List supported architectures',
     )
     ..addFlag(
       'from_path',
@@ -242,18 +256,10 @@ void logUsage(ArgParser argParser) {
 }
 
 Future<String> getPath() async {
-  final architectures = [
-    Abi.windowsX64,
-    Abi.macosX64,
-    Abi.macosArm64,
-    Abi.linuxX64,
-    Abi.linuxArm64,
-  ];
-
-  if (!architectures.contains(Abi.current())) {
+  if (!architectures.keys.contains(Abi.current())) {
     final m1 = 'Architecture ${Abi.current()} not spported.';
     const m2 = 'Supported architectures are:';
-    stderr.write('$m1 $m2 $architectures');
+    stderr.write('$m1 $m2 ${architectures.keys}');
     exit(1);
   }
 
@@ -271,7 +277,7 @@ Future<String> getPath() async {
     exit(1);
   }
 
-  return package.packageUriRoot.path;
+  return p.join(p.fromUri(package.root), architectures[Abi.current()]);
 }
 
 Future<void> convertToWebP(
@@ -317,6 +323,10 @@ Future<void> main(List<String> arguments) async {
     }
     if (results.wasParsed('version')) {
       log('webp version: $version');
+      return;
+    }
+    if (results.wasParsed('architectures')) {
+      log('Supported architectures: ${architectures.keys}');
       return;
     }
     if (results.wasParsed('verbose')) {
