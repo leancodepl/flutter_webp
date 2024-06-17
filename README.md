@@ -1,15 +1,8 @@
 # webp
 
+[![webp pub.dev badge][pub-badge]][pub-badge-link]
+
 Asset transformer for converting images into WebP files.
-
-## Install cwebp
-### Option 1: Download precompiled binaries from Google
-
-Follow the instructions at [https://developers.google.com/speed/webp/docs/precompiled](https://developers.google.com/speed/webp/docs/precompiled) to download and install the precompiled binaries for cwebp.
-
-### Option 2: Install using Homebrew (macOS)
-
-If you are using macOS and have Homebrew installed, you can install cwebp using the following command: `brew install webp`
 
 ## Install package
 
@@ -21,7 +14,7 @@ flutter pub add webp --dev
 
 Add to your pubspec.yaml
 
-#### Default usage
+### Default usage
 
 If run without additional arguments, the default value of the quality parameter = 75 with lossy compression will be used.
 
@@ -33,7 +26,7 @@ flutter:
         - package: webp
 ```
 
-#### Usage with params
+### Usage with params
 
 ```yaml
 flutter:
@@ -42,6 +35,17 @@ flutter:
       transformers:
         - package: webp
           args: ['--quality=65', '--hint=graph', '--af']
+```
+
+By default, the package runs the embedded precompiled cwebp binary. You can use the one specified in your `$PATH` by adding the `--from_path` flag.
+
+```yaml
+flutter:
+  assets:
+    - path: assets/logo.jpg
+      transformers:
+        - package: webp
+          args: ['--from_path']
 ```
 
 ## cwebp parameters
@@ -55,3 +59,17 @@ Here are some commonly used parameters for cwebp:
 - `-s`, `--size`: Set the target size for the output image. The value should be in bytes. For example, `--size=500000`.
 
 For a complete list of parameters and their descriptions, please refer to the [cwebp documentation](https://developers.google.com/speed/webp/docs/cwebp).
+
+---
+
+<p align="center">
+   <a href="https://leancode.co/?utm_source=readme&utm_medium=bloc_lens_package">
+      <img alt="LeanCode" src="https://leancodepublic.blob.core.windows.net/public/wide.png" width="300"/>
+   </a>
+   <p align="center">
+   Built with ☕️ by <a href="https://leancode.co/?utm_source=readme&utm_medium=bloc_lens_package">LeanCode</a>
+   </p>
+</p>
+
+[pub-badge]: https://img.shields.io/pub/v/webp
+[pub-badge-link]: https://pub.dev/packages/webp
