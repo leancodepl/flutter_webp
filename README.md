@@ -3,7 +3,15 @@
 [![webp pub.dev badge][pub-badge]][pub-badge-link]
 [![][build-badge]][build-badge-link]
 
-Asset transformer for converting images into WebP files. Read more about Asset transformers in Flutter in the [documentation](https://docs.flutter.dev/ui/assets/asset-transformation).
+Asset transformer for converting images into WebP files.
+
+## Supported architectures
+
+- windows_x64
+- macos_x64
+- macos_arm64
+- linux_x64
+- linux_arm64
 
 ## Install package
 
@@ -60,6 +68,9 @@ Here are some commonly used parameters for cwebp:
 - `-s`, `--size`: Set the target size for the output image. The value should be in bytes. For example, `--size=500000`.
 
 For a complete list of parameters and their descriptions, please refer to the [cwebp documentation](https://developers.google.com/speed/webp/docs/cwebp).
+
+## Learn more
+- [Asset transformers in Flutter](https://docs.flutter.dev/ui/assets/asset-transformation)
 
 ---
 
