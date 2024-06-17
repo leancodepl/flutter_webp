@@ -53,7 +53,6 @@ ArgParser buildParser() {
     )
     ..addFlag(
       'architectures',
-      abbr: 'arch',
       negatable: false,
       help: 'List supported architectures',
     )
