@@ -254,11 +254,11 @@ void logUsage(ArgParser argParser) {
   log(argParser.usage);
 }
 
-Future<String> getPath() async {
+Future<String> getPackageCwebpPath() async {
   if (!architectures.keys.contains(Abi.current())) {
-    final m1 = 'Architecture ${Abi.current()} not spported.';
-    const m2 = 'Supported architectures are:';
-    stderr.write('$m1 $m2 ${architectures.keys}');
+    final msg1 = 'Architecture ${Abi.current()} not supported.';
+    final msg2 = 'Supported architectures are: ${architectures.keys}.';
+    stderr.write('$msg1 $msg2');
     exit(1);
   }
 
@@ -290,7 +290,7 @@ Future<void> convertToWebP(
   if (fromPath) {
     path = 'cwebp';
   } else {
-    path = p.join(await getPath(), 'cwebp');
+    path = p.join(await getPackageCwebpPath(), 'cwebp');
   }
 
   try {
