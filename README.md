@@ -84,5 +84,5 @@ For a complete list of parameters and their descriptions, please refer to the [c
 
 [pub-badge]: https://img.shields.io/pub/v/webp
 [pub-badge-link]: https://pub.dev/packages/webp
-[build-badge]: https://img.shields.io/github/actions/workflow/status/leancodepl/flutter_webp/check.yml?branch=main
+[build-badge]: https://img.shields.io/github/actions/workflow/status/leancodepl/flutter_webp/check.yml
 [build-badge-link]: https://github.com/leancodepl/flutter_webp/actions/workflows/check.yml
