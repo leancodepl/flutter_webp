@@ -1,13 +1,24 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:package_config/package_config.dart';
+import 'package:path/path.dart' as p;
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
 
-const version = '0.0.1';
+const _version = '0.1.0';
 
-ArgParser buildParser() {
+const _architectures = {
+  Abi.windowsX64: 'windows-x64',
+  Abi.macosX64: 'mac-x86-64',
+  Abi.macosArm64: 'mac-arm64',
+  Abi.linuxX64: 'linux-x86-64',
+  Abi.linuxArm64: 'linux-aarch64',
+};
+
+ArgParser _buildParser() {
   return ArgParser()
 
     /// Basic Options
@@ -39,6 +50,16 @@ ArgParser buildParser() {
       mandatory: true,
       abbr: 'o',
       help: 'Output WebP file.',
+    )
+    ..addFlag(
+      'architectures',
+      negatable: false,
+      help: 'List supported architectures',
+    )
+    ..addFlag(
+      'from_path',
+      negatable: false,
+      help: r'Use a cwebp converter from the $PATH.',
     )
     ..addFlag(
       'lossless',
@@ -226,41 +247,92 @@ ArgParser buildParser() {
     );
 }
 
-void logUsage(ArgParser argParser) {
+void _logUsage(ArgParser argParser) {
   log(
     'Usage: dart webp.dart <flags> [arguments]',
   );
   log(argParser.usage);
 }
 
-Future<void> convertToWebP(
+Future<String> _getPackageCwebpPath() async {
+  if (!_architectures.keys.contains(Abi.current())) {
+    stderr.write(
+      'Architecture ${Abi.current()} not supported. Supported architectures are: ${_architectures.keys}.',
+    );
+    exit(1);
+  }
+
+  final config = await findPackageConfig(Directory.current);
+
+  if (config == null) {
+    stderr.write('Failed to locate or read package config.');
+    exit(1);
+  }
+
+  final package = config.packages.where((e) => e.name == 'webp').firstOrNull;
+
+  if (package == null) {
+    stderr.write('Failed to find webp in package config.');
+    exit(1);
+  }
+
+  return p.join(p.fromUri(package.root), _architectures[Abi.current()]);
+}
+
+Future<void> _convertToWebP(
   String input,
   String output,
-  List<String> options,
-) async {
-  final result = await Process.run('cwebp', [...options, input, '-o', output]);
-  log(result.stdout.toString());
+  List<String> options, {
+  required bool fromPath,
+}) async {
+  String? path;
+
+  if (fromPath) {
+    path = 'cwebp';
+  } else {
+    path = p.join(await _getPackageCwebpPath(), 'cwebp');
+  }
+
+  try {
+    final result = await Process.run(path, [...options, input, '-o', output]);
+    log(result.stdout.toString());
+  } catch (e) {
+    if (fromPath) {
+      stderr.write(r'cwebp not found in $PATH.');
+    } else {
+      stderr.write('cwebp not found in $path.');
+    }
+    exit(1);
+  }
 }
 
 Future<void> main(List<String> arguments) async {
-  final argParser = buildParser();
+  final argParser = _buildParser();
   final options = <String>[];
   try {
     final results = argParser.parse(arguments);
     var verbose = false;
+    var fromPath = false;
 
     // Process the parsed arguments.
     // Basic Options
     if (results.wasParsed('help')) {
-      logUsage(argParser);
+      _logUsage(argParser);
       return;
     }
     if (results.wasParsed('version')) {
-      log('webp version: $version');
+      log('webp version: $_version');
+      return;
+    }
+    if (results.wasParsed('architectures')) {
+      log('Supported architectures: ${_architectures.keys}');
       return;
     }
     if (results.wasParsed('verbose')) {
       verbose = true;
+    }
+    if (results.wasParsed('from_path')) {
+      fromPath = true;
     }
     if (results.wasParsed('lossless')) {
       options.add('-lossless');
@@ -422,10 +494,11 @@ Future<void> main(List<String> arguments) async {
 
     // Process the parsed arguments.
     if (results.wasParsed('input') && results.wasParsed('output')) {
-      await convertToWebP(
+      await _convertToWebP(
         results['input'] as String,
         results['output'] as String,
         options,
+        fromPath: fromPath,
       );
     } else {
       log('wrong input');
@@ -434,6 +507,6 @@ Future<void> main(List<String> arguments) async {
     // log usage information if an invalid argument was provided.
     log(e.message);
     log('');
-    logUsage(argParser);
+    _logUsage(argParser);
   }
 }
