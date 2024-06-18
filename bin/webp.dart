@@ -8,9 +8,9 @@ import 'package:path/path.dart' as p;
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
 
-const version = '0.1.0';
+const _version = '0.1.0';
 
-const architectures = {
+const _architectures = {
   Abi.windowsX64: 'windows-x64',
   Abi.macosX64: 'mac-x86-64',
   Abi.macosArm64: 'mac-arm64',
@@ -18,7 +18,7 @@ const architectures = {
   Abi.linuxArm64: 'linux-aarch64',
 };
 
-ArgParser buildParser() {
+ArgParser _buildParser() {
   return ArgParser()
 
     /// Basic Options
@@ -247,18 +247,18 @@ ArgParser buildParser() {
     );
 }
 
-void logUsage(ArgParser argParser) {
+void _logUsage(ArgParser argParser) {
   log(
     'Usage: dart webp.dart <flags> [arguments]',
   );
   log(argParser.usage);
 }
 
-Future<String> getPackageCwebpPath() async {
-  if (!architectures.keys.contains(Abi.current())) {
-    final msg1 = 'Architecture ${Abi.current()} not supported.';
-    final msg2 = 'Supported architectures are: ${architectures.keys}.';
-    stderr.write('$msg1 $msg2');
+Future<String> _getPackageCwebpPath() async {
+  if (!_architectures.keys.contains(Abi.current())) {
+    stderr.write(
+      'Architecture ${Abi.current()} not supported. Supported architectures are: ${_architectures.keys}.',
+    );
     exit(1);
   }
 
@@ -276,10 +276,10 @@ Future<String> getPackageCwebpPath() async {
     exit(1);
   }
 
-  return p.join(p.fromUri(package.root), architectures[Abi.current()]);
+  return p.join(p.fromUri(package.root), _architectures[Abi.current()]);
 }
 
-Future<void> convertToWebP(
+Future<void> _convertToWebP(
   String input,
   String output,
   List<String> options, {
@@ -290,7 +290,7 @@ Future<void> convertToWebP(
   if (fromPath) {
     path = 'cwebp';
   } else {
-    path = p.join(await getPackageCwebpPath(), 'cwebp');
+    path = p.join(await _getPackageCwebpPath(), 'cwebp');
   }
 
   try {
@@ -307,7 +307,7 @@ Future<void> convertToWebP(
 }
 
 Future<void> main(List<String> arguments) async {
-  final argParser = buildParser();
+  final argParser = _buildParser();
   final options = <String>[];
   try {
     final results = argParser.parse(arguments);
@@ -317,15 +317,15 @@ Future<void> main(List<String> arguments) async {
     // Process the parsed arguments.
     // Basic Options
     if (results.wasParsed('help')) {
-      logUsage(argParser);
+      _logUsage(argParser);
       return;
     }
     if (results.wasParsed('version')) {
-      log('webp version: $version');
+      log('webp version: $_version');
       return;
     }
     if (results.wasParsed('architectures')) {
-      log('Supported architectures: ${architectures.keys}');
+      log('Supported architectures: ${_architectures.keys}');
       return;
     }
     if (results.wasParsed('verbose')) {
@@ -494,7 +494,7 @@ Future<void> main(List<String> arguments) async {
 
     // Process the parsed arguments.
     if (results.wasParsed('input') && results.wasParsed('output')) {
-      await convertToWebP(
+      await _convertToWebP(
         results['input'] as String,
         results['output'] as String,
         options,
@@ -507,6 +507,6 @@ Future<void> main(List<String> arguments) async {
     // log usage information if an invalid argument was provided.
     log(e.message);
     log('');
-    logUsage(argParser);
+    _logUsage(argParser);
   }
 }
