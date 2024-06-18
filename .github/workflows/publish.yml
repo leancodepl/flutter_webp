@@ -27,7 +27,7 @@ jobs:
           sdk: 3.4
 
       - name: Download cwebp
-        run:
+        run: |
           mkdir tmp
           cd tmp
 
