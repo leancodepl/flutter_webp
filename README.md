@@ -8,7 +8,7 @@ Asset transformer for converting images into WebP files.
 ## Install package
 
 ```
-flutter pub add webp --dev
+flutter pub add webp
 ```
 
 ## Package usage

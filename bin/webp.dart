@@ -8,7 +8,7 @@ import 'package:path/path.dart' as p;
 
 /// All cwebp options are listed: https://developers.google.com/speed/webp/docs/cwebp
 
-const _version = '1.0.0';
+const _version = '1.0.0+1';
 
 const _architectures = {
   Abi.windowsX64: 'windows-x64',
