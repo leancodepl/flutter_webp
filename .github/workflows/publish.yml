@@ -10,6 +10,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      cwebp-version: 1.4.0
+
     permissions:
       id-token: write
       contents: write
@@ -28,11 +31,11 @@ jobs:
           mkdir tmp
           cd tmp
 
-          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0-windows-x64.zip -o windows-x64.zip
-          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0-rc1-mac-x86-64.tar.gz -o mac-x86-64.tar.gz
-          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0-rc1-mac-arm64.tar.gz -o mac-arm64.tar.gz
-          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0-linux-x86-64.tar.gz -o linux-x86-64.tar.gz
-          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.4.0-linux-aarch64.tar.gz -o linux-aarch64.tar.gz
+          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${{env.cwebp-version}}-windows-x64.zip -o windows-x64.zip
+          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${{env.cwebp-version}}-rc1-mac-x86-64.tar.gz -o mac-x86-64.tar.gz
+          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${{env.cwebp-version}}-rc1-mac-arm64.tar.gz -o mac-arm64.tar.gz
+          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${{env.cwebp-version}}-linux-x86-64.tar.gz -o linux-x86-64.tar.gz
+          curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${{env.cwebp-version}}-linux-aarch64.tar.gz -o linux-aarch64.tar.gz
 
           tar -xzf windows-x64.zip
           tar -xzf mac-x86-64.tar.gz
