@@ -293,6 +293,14 @@ Future<void> _convertToWebP(
     path = p.join(await _getPackageCwebpPath(), 'cwebp');
   }
 
+  if (p.basename(input).startsWith('.DS_Store')) {
+    // Creates an empty file
+    //
+    // The empty file allows the iOS build to succeed. Though the proper solution would be to exclude the file from the build.
+    File(output).createSync(recursive: true);
+    return;
+  }
+
   try {
     final result = await Process.run(path, [...options, input, '-o', output]);
     log(result.stdout.toString());
