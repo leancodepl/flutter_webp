@@ -34,3 +34,35 @@ jobs:
       - name: Dry run pub publish
         # We don't want it to fail the CI, it's just to see how would `pub publish` behave.
         run: dart pub publish --dry-run || true
+
+  build-example:
+    runs-on: ubuntu-latest
+
+    env:
+      cwebp-version: '1.4.0'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          flutter-version: 3.41.5
+
+      - name: Install dependencies
+        working-directory: example
+        run: flutter pub get
+
+      - name: Download cwebp
+        run: |
+          curl -sL https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${{ env.cwebp-version }}-linux-x86-64.tar.gz -o cwebp.tar.gz
+          tar -xzf cwebp.tar.gz
+          mkdir -p linux-x86-64
+          mv libwebp-${{ env.cwebp-version }}-linux-x86-64/bin/cwebp linux-x86-64/cwebp
+          rm -rf cwebp.tar.gz libwebp-${{ env.cwebp-version }}-linux-x86-64
+
+      - name: Build example web app
+        working-directory: example
+        run: flutter build web
