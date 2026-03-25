@@ -494,9 +494,24 @@ Future<void> main(List<String> arguments) async {
 
     // Process the parsed arguments.
     if (results.wasParsed('input') && results.wasParsed('output')) {
+      final input = results['input'] as String;
+      final output = results['output'] as String;
+
+      if (p.basename(input).startsWith('.DS_Store')) {
+        // Creates an empty file
+        //
+        // The empty file allows the iOS build to succeed. Though the proper solution would be to exclude the file from the build.
+        if (File(output).parent case final dir when !dir.existsSync()) {
+          dir.createSync(recursive: true);
+        }
+
+        File(input).copySync(output);
+        return;
+      }
+
       await _convertToWebP(
-        results['input'] as String,
-        results['output'] as String,
+        input,
+        output,
         options,
         fromPath: fromPath,
       );
