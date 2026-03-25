@@ -20,7 +20,6 @@ const _architectures = {
 
 ArgParser _buildParser() {
   return ArgParser()
-
     /// Basic Options
     ..addFlag(
       'help',
@@ -34,23 +33,9 @@ ArgParser _buildParser() {
       negatable: false,
       help: 'Show additional command output.',
     )
-    ..addFlag(
-      'version',
-      negatable: false,
-      help: 'log the tool version.',
-    )
-    ..addOption(
-      'input',
-      mandatory: true,
-      abbr: 'i',
-      help: 'Input image file.',
-    )
-    ..addOption(
-      'output',
-      mandatory: true,
-      abbr: 'o',
-      help: 'Output WebP file.',
-    )
+    ..addFlag('version', negatable: false, help: 'log the tool version.')
+    ..addOption('input', mandatory: true, abbr: 'i', help: 'Input image file.')
+    ..addOption('output', mandatory: true, abbr: 'o', help: 'Output WebP file.')
     ..addFlag(
       'architectures',
       negatable: false,
@@ -114,16 +99,12 @@ ArgParser _buildParser() {
       help:
           'Resize the source to a rectangle with size width x height. If either (but not both) of the width or height parameters is 0, the value will be calculated preserving the aspect-ratio. Note: scaling is applied after cropping.',
     )
-    ..addFlag(
-      'mt',
-      help: 'Use multi-threading for encoding, if possible.',
-    )
+    ..addFlag('mt', help: 'Use multi-threading for encoding, if possible.')
     ..addFlag(
       'low_memory',
       help:
           'Reduce memory usage of lossy encoding by saving four times the compressed size (typically). This will make the encoding slower and the output slightly different in size and distortion. This flag is only effective for methods 3 and up, and is off by default. Note that leaving this flag off will have some side effects on the bitstream: it forces certain bitstream features like number of partitions (forced to 1). Note that a more detailed report of bitstream size is loged by cwebp when using this option.',
     )
-
     /// Lossy Options
     /// These options are only effective when doing lossy encoding (the default, with or without alpha).
     ..addOption(
@@ -151,7 +132,6 @@ ArgParser _buildParser() {
       help:
           'Change the internal parameter mapping to better match the expected size of JPEG compression. This flag will generally produce an output file of similar size to its JPEG equivalent (for the same -q setting), but with less visual distortion.',
     )
-
     /// Lossy advanced options
     ..addOption(
       'f',
@@ -194,7 +174,6 @@ ArgParser _buildParser() {
       help:
           "Degrade quality by limiting the number of bits used by some macroblocks. Range is 0 (no degradation, the default) to 100 (full degradation). Useful values are usually around 30-70 for moderately large images. In the VP8 format, the so-called control partition has a limit of 512k and is used to store the following information: whether the macroblock is skipped, which segment it belongs to, whether it is coded as intra 4x4 or intra 16x16 mode, and finally the prediction modes to use for each of the sub-blocks. For a very large image, 512k only leaves room for a few bits per 16x16 macroblock. The absolute minimum is 4 bits per macroblock. Skip, segment, and mode information can use up almost all these 4 bits (although the case is unlikely), which is problematic for very large images. The partition_limit factor controls how frequently the most bit-costly mode (intra 4x4) will be used. This is useful in case the 512k limit is reached and the following message is displayed: Error code: 6 (PARTITION0_OVERFLOW: Partition #0 is too big to fit 512k). If using -partition_limit is not enough to meet the 512k constraint, one should use less segments in order to save more header bits per macroblock. See the -segments option. Note the -m and -q options also influence the encoder's decisions and ability to hit this limit.",
     )
-
     /// Additional Options
     ..addOption(
       's',
@@ -241,16 +220,11 @@ ArgParser _buildParser() {
       help:
           'A comma separated list of metadata to copy from the input to the output if present. Valid values: all, none, exif, icc, xmp. The default is none.',
     )
-    ..addFlag(
-      'noasm',
-      help: 'Disable all assembly optimizations.',
-    );
+    ..addFlag('noasm', help: 'Disable all assembly optimizations.');
 }
 
 void _logUsage(ArgParser argParser) {
-  log(
-    'Usage: dart webp.dart <flags> [arguments]',
-  );
+  log('Usage: dart webp.dart <flags> [arguments]');
   log(argParser.usage);
 }
 
