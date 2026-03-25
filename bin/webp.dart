@@ -483,12 +483,7 @@ Future<void> main(List<String> arguments) async {
         return;
       }
 
-      await _convertToWebP(
-        input,
-        output,
-        options,
-        fromPath: fromPath,
-      );
+      await _convertToWebP(input, output, options, fromPath: fromPath);
     } else {
       log('wrong input');
     }
